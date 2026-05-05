@@ -1,26 +1,210 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* ============================================================
+   OLKASIS ADMIN — Global Design System
+   ============================================================ */
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Layout */
+    --sidebar-width: 224px;
+    --sidebar-collapsed-width: 64px;
+    --header-height: 56px;
+
+    /* Surface colours (light mode) */
+    --bg-page:    #f8fafc;
+    --bg-card:    #ffffff;
+    --bg-sidebar: #0f172a;
+
+    /* Border */
+    --border:     #e2e8f0;
+    --border-focus: #3b82f6;
+
+    /* Text */
+    --text-primary:   #0f172a;
+    --text-secondary: #475569;
+    --text-muted:     #94a3b8;
+
+    /* Brand */
+    --brand:       #1d4ed8;
+    --brand-light: #dbeafe;
+
+    /* Status colours */
+    --success: #16a34a;
+    --warning: #d97706;
+    --danger:  #dc2626;
+    --info:    #0284c7;
+    --neutral: #64748b;
+  }
+
+  .dark {
+    --bg-page:    #0f172a;
+    --bg-card:    #1e293b;
+    --bg-sidebar: #020617;
+
+    --border:     #334155;
+    --border-focus: #3b82f6;
+
+    --text-primary:   #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted:     #475569;
+
+    --brand-light: #1e3a8a;
+  }
+
+  * {
+    box-sizing: border-box;
+    border-color: var(--border);
+  }
+
+  html {
+    font-family: "Inter", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background: #334155;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ============================================================
+   BADGE UTILITIES
+   Used as: className="badge-success", "badge-danger", etc.
+   ============================================================ */
+
+@layer components {
+  /* Base badge */
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-success {
+    @apply badge bg-emerald-50 text-emerald-700 border border-emerald-200;
+  }
+  .badge-warning {
+    @apply badge bg-amber-50 text-amber-700 border border-amber-200;
+  }
+  .badge-danger {
+    @apply badge bg-red-50 text-red-700 border border-red-200;
+  }
+  .badge-info {
+    @apply badge bg-sky-50 text-sky-700 border border-sky-200;
+  }
+  .badge-neutral {
+    @apply badge bg-slate-100 text-slate-600 border border-slate-200;
+  }
+  .badge-purple {
+    @apply badge bg-purple-50 text-purple-700 border border-purple-200;
+  }
+
+  /* Dark mode badge overrides */
+  .dark .badge-success { @apply bg-emerald-950 text-emerald-400 border-emerald-800; }
+  .dark .badge-warning { @apply bg-amber-950 text-amber-400 border-amber-800; }
+  .dark .badge-danger  { @apply bg-red-950 text-red-400 border-red-800; }
+  .dark .badge-info    { @apply bg-sky-950 text-sky-400 border-sky-800; }
+  .dark .badge-neutral { @apply bg-slate-800 text-slate-400 border-slate-700; }
+  .dark .badge-purple  { @apply bg-purple-950 text-purple-400 border-purple-800; }
+
+  /* ── Card ── */
+  .olk-card {
+    @apply bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm;
+  }
+
+  /* ── Stat card number ── */
+  .stat-value {
+    @apply text-2xl font-bold font-mono tracking-tight;
+  }
+
+  /* ── Table shared styles ── */
+  .olk-table {
+    @apply w-full text-sm;
+  }
+  .olk-table thead tr {
+    @apply border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60;
+  }
+  .olk-table thead th {
+    @apply text-left px-4 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide;
+  }
+  .olk-table tbody tr {
+    @apply border-b border-slate-50 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors;
+  }
+  .olk-table tbody td {
+    @apply px-4 py-3 text-slate-700 dark:text-slate-300;
+  }
+
+  /* ── Sidebar nav item ── */
+  .nav-item {
+    @apply flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-400 text-sm font-medium
+           transition-all duration-150 cursor-pointer select-none;
+  }
+  .nav-item:hover {
+    @apply bg-slate-800 text-slate-200;
+  }
+  .nav-item.active {
+    @apply bg-blue-900/60 text-white;
+  }
+  .nav-item .nav-icon {
+    @apply w-4 h-4 shrink-0;
+  }
+
+  /* ── Page fade-in ── */
+  .page-enter {
+    @apply animate-fade-in;
+  }
+
+  /* ── Risk severity dot ── */
+  .severity-critical { @apply bg-red-500; }
+  .severity-high     { @apply bg-amber-500; }
+  .severity-medium   { @apply bg-sky-500; }
+  .severity-low      { @apply bg-slate-400; }
+
+  /* ── Mono figures ── */
+  .mono { @apply font-mono text-slate-800 dark:text-slate-200; }
+
+  /* ── Status ring ── */
+  .status-live {
+    @apply inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600;
+  }
+  .status-live::before {
+    content: "";
+    @apply w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse;
+  }
+}
+
+/* ============================================================
+   UTILITY OVERRIDES
+   ============================================================ */
+
+@layer utilities {
+  /* Hide scrollbar but keep scrollability */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Smooth focus ring for inputs */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500;
+  }
 }
