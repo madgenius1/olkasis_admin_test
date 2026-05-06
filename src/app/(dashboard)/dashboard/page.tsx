@@ -2,64 +2,88 @@
 
 import { useState, useCallback } from "react";
 import {
-  AreaChart, Area, BarChart, Bar, LineChart, Line,
-  PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, Legend,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
 } from "recharts";
 import {
-  Users, TrendingUp, DollarSign, Activity,
-  ArrowUpRight, ArrowDownRight, RefreshCw,
-  CheckCircle2, AlertTriangle, Clock, Zap,
-  ShieldCheck, Headphones,
+  Users,
+  TrendingUp,
+  DollarSign,
+  Activity,
+  ArrowUpRight,
+  ArrowDownRight,
+  RefreshCw,
+  CheckCircle2,
+  AlertTriangle,
+  Clock,
+  Zap,
+  ShieldCheck,
+  Headphones,
 } from "lucide-react";
 import {
   MOCK_REVENUE_DATA,
   MOCK_USER_GROWTH,
   MOCK_VOLUME_DATA,
 } from "../../../lib/mockData";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../../../components/ui/card";
 import { Button } from "../../../components/ui/button";
 import type { Metadata } from "next";
-import type {
-  RevenueDataPoint,
-} from "../../../types/index";
+import type { RevenueDataPoint } from "../../../types/index";
 
 /* ─────────────────────────────────────────────────────────────
    TYPE DEFINITIONS
 ───────────────────────────────────────────────────────────── */
 type HealthStatus = "good" | "warning" | "critical";
-type ChangeType   = "up" | "down" | "neutral";
+type ChangeType = "up" | "down" | "neutral";
 type ActivityType = "kyc" | "alert" | "user" | "trade" | "ticket";
-type Period       = "7d" | "1m" | "ytd";
+type Period = "7d" | "1m" | "ytd";
 
 interface KpiCard {
-  title:      string;
-  value:      string;
-  change:     string;
+  title: string;
+  value: string;
+  change: string;
   changeType: ChangeType;
-  sub:        string;
-  icon:       React.ElementType;
-  iconColor:  string;
-  iconBg:     string;
+  sub: string;
+  icon: React.ElementType;
+  iconColor: string;
+  iconBg: string;
 }
 
 interface HealthMetric {
-  label:  string;
-  value:  string;
+  label: string;
+  value: string;
   status: HealthStatus;
 }
 
 interface AccountDistribution {
-  name:  string;
+  name: string;
   value: number;
   color: string;
 }
 
 interface ActivityItem {
-  type:  ActivityType;
-  text:  string;
-  time:  string;
-  icon:  React.ElementType;
+  type: ActivityType;
+  text: string;
+  time: string;
+  icon: React.ElementType;
   color: string;
 }
 
@@ -68,117 +92,117 @@ interface ActivityItem {
 ───────────────────────────────────────────────────────────── */
 const KPI_CARDS: KpiCard[] = [
   {
-    title:      "Total Users",
-    value:      "48,291",
-    change:     "+2.4%",
+    title: "Total Users",
+    value: "48,291",
+    change: "+2.4%",
     changeType: "up",
-    sub:        "1,142 new this week",
-    icon:       Users,
-    iconColor:  "text-blue-700 dark:text-blue-400",
-    iconBg:     "bg-blue-50 dark:bg-blue-900/40",
+    sub: "1,142 new this week",
+    icon: Users,
+    iconColor: "text-blue-700 dark:text-blue-400",
+    iconBg: "bg-blue-50 dark:bg-blue-900/40",
   },
   {
-    title:      "Assets Under Management",
-    value:      "Ksh. 2.41B",
-    change:     "+5.8%",
+    title: "Assets Under Management",
+    value: "Ksh. 2.41B",
+    change: "+5.8%",
     changeType: "up",
-    sub:        "vs last month",
-    icon:       DollarSign,
-    iconColor:  "text-emerald-700 dark:text-emerald-400",
-    iconBg:     "bg-emerald-50 dark:bg-emerald-900/40",
+    sub: "vs last month",
+    icon: DollarSign,
+    iconColor: "text-emerald-700 dark:text-emerald-400",
+    iconBg: "bg-emerald-50 dark:bg-emerald-900/40",
   },
   {
-    title:      "Daily Trade Volume",
-    value:      "Ksh. 142.3M",
-    change:     "+12.1%",
+    title: "Daily Trade Volume",
+    value: "Ksh. 142.3M",
+    change: "+12.1%",
     changeType: "up",
-    sub:        "vs yesterday",
-    icon:       TrendingUp,
-    iconColor:  "text-sky-700 dark:text-sky-400",
-    iconBg:     "bg-sky-50 dark:bg-sky-900/40",
+    sub: "vs yesterday",
+    icon: TrendingUp,
+    iconColor: "text-sky-700 dark:text-sky-400",
+    iconBg: "bg-sky-50 dark:bg-sky-900/40",
   },
   {
-    title:      "Revenue (MTD)",
-    value:      "Ksh. 4.82M",
-    change:     "+8.3%",
+    title: "Revenue (MTD)",
+    value: "Ksh. 4.82M",
+    change: "+8.3%",
     changeType: "up",
-    sub:        "fees + commissions",
-    icon:       Activity,
-    iconColor:  "text-violet-700 dark:text-violet-400",
-    iconBg:     "bg-violet-50 dark:bg-violet-900/40",
+    sub: "fees + commissions",
+    icon: Activity,
+    iconColor: "text-violet-700 dark:text-violet-400",
+    iconBg: "bg-violet-50 dark:bg-violet-900/40",
   },
 ];
 
 const HEALTH_METRICS: HealthMetric[] = [
-  { label: "App Uptime",         value: "99.98%", status: "good" },
-  { label: "API Response (P95)", value: "142ms",  status: "good" },
-  { label: "Failed Tx Rate",     value: "0.12%",  status: "good" },
-  { label: "Open Tickets",       value: "47",     status: "warning" },
-  { label: "Pending KYC",        value: "24",     status: "warning" },
-  { label: "AML Alerts",         value: "7",      status: "critical" },
+  { label: "App Uptime", value: "99.98%", status: "good" },
+  { label: "API Response (P95)", value: "142ms", status: "good" },
+  { label: "Failed Tx Rate", value: "0.12%", status: "good" },
+  { label: "Open Tickets", value: "47", status: "warning" },
+  { label: "Pending KYC", value: "24", status: "warning" },
+  { label: "AML Alerts", value: "7", status: "critical" },
 ];
 
 const ACCOUNT_DISTRIBUTION: AccountDistribution[] = [
   { name: "Individual", value: 38420, color: "#1E40AF" },
-  { name: "Joint",      value: 6840,  color: "#0EA5E9" },
-  { name: "Junior",     value: 3031,  color: "#38BDF8" },
+  { name: "Joint", value: 6840, color: "#0EA5E9" },
+  { name: "Junior", value: 3031, color: "#38BDF8" },
 ];
 
 const RECENT_ACTIVITY: ActivityItem[] = [
   {
-    type:  "kyc",
-    text:  "KYC approved for James Mwangi",
-    time:  "2 min ago",
-    icon:  CheckCircle2,
+    type: "kyc",
+    text: "KYC approved for James Mwangi",
+    time: "2 min ago",
+    icon: CheckCircle2,
     color: "text-emerald-600",
   },
   {
-    type:  "alert",
-    text:  "AML alert: Large transaction Ksh. 2.5M",
-    time:  "8 min ago",
-    icon:  AlertTriangle,
+    type: "alert",
+    text: "AML alert: Large transaction Ksh. 2.5M",
+    time: "8 min ago",
+    icon: AlertTriangle,
     color: "text-red-600",
   },
   {
-    type:  "user",
-    text:  "New user registration: Faith Njeri",
-    time:  "15 min ago",
-    icon:  Users,
+    type: "user",
+    text: "New user registration: Faith Njeri",
+    time: "15 min ago",
+    icon: Users,
     color: "text-blue-600",
   },
   {
-    type:  "trade",
-    text:  "Large order: 10,000 SCOM @ 18.75",
-    time:  "22 min ago",
-    icon:  TrendingUp,
+    type: "trade",
+    text: "Large order: 10,000 SCOM @ 18.75",
+    time: "22 min ago",
+    icon: TrendingUp,
     color: "text-sky-600",
   },
   {
-    type:  "ticket",
-    text:  "Urgent ticket: Withdrawal overdue",
-    time:  "35 min ago",
-    icon:  Clock,
+    type: "ticket",
+    text: "Urgent ticket: Withdrawal overdue",
+    time: "35 min ago",
+    icon: Clock,
     color: "text-amber-600",
   },
 ];
 
 const ACTIVITY_ICON_BG: Record<ActivityType, string> = {
-  kyc:    "bg-emerald-50 dark:bg-emerald-900/30",
-  alert:  "bg-red-50 dark:bg-red-900/30",
-  user:   "bg-blue-50 dark:bg-blue-900/30",
-  trade:  "bg-sky-50 dark:bg-sky-900/30",
+  kyc: "bg-emerald-50 dark:bg-emerald-900/30",
+  alert: "bg-red-50 dark:bg-red-900/30",
+  user: "bg-blue-50 dark:bg-blue-900/30",
+  trade: "bg-sky-50 dark:bg-sky-900/30",
   ticket: "bg-amber-50 dark:bg-amber-900/30",
 };
 
 const HEALTH_DOT: Record<HealthStatus, string> = {
-  good:     "bg-emerald-500",
-  warning:  "bg-amber-500",
+  good: "bg-emerald-500",
+  warning: "bg-amber-500",
   critical: "bg-red-500",
 };
 
 const HEALTH_VALUE_COLOUR: Record<HealthStatus, string> = {
-  good:     "text-slate-800 dark:text-slate-100",
-  warning:  "text-amber-700 dark:text-amber-400",
+  good: "text-slate-800 dark:text-slate-100",
+  warning: "text-amber-700 dark:text-amber-400",
   critical: "text-red-700 dark:text-red-400",
 };
 
@@ -186,10 +210,10 @@ const HEALTH_VALUE_COLOUR: Record<HealthStatus, string> = {
    RECHARTS TOOLTIP STYLES
 ───────────────────────────────────────────────────────────── */
 const TOOLTIP_STYLE: React.CSSProperties = {
-  fontSize:     12,
+  fontSize: 12,
   borderRadius: 8,
-  border:       "1px solid #E2E8F0",
-  boxShadow:    "0 4px 6px -1px rgba(0,0,0,0.07)",
+  border: "1px solid #E2E8F0",
+  boxShadow: "0 4px 6px -1px rgba(0,0,0,0.07)",
 };
 
 /* ─────────────────────────────────────────────────────────────
@@ -270,11 +294,11 @@ function RevenueChart({ data }: { data: RevenueDataPoint[] }) {
       <AreaChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: 5 }}>
         <defs>
           <linearGradient id="tradingGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%"  stopColor="#1E40AF" stopOpacity={0.15} />
+            <stop offset="5%" stopColor="#1E40AF" stopOpacity={0.15} />
             <stop offset="95%" stopColor="#1E40AF" stopOpacity={0} />
           </linearGradient>
           <linearGradient id="p2pGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%"  stopColor="#0EA5E9" stopOpacity={0.15} />
+            <stop offset="5%" stopColor="#0EA5E9" stopOpacity={0.15} />
             <stop offset="95%" stopColor="#0EA5E9" stopOpacity={0} />
           </linearGradient>
         </defs>
@@ -292,10 +316,10 @@ function RevenueChart({ data }: { data: RevenueDataPoint[] }) {
           tickFormatter={(v: number) => `${(v / 1_000_000).toFixed(1)}M`}
         />
         <Tooltip
-          formatter={(v: number, name: string) => [
-            `KSH ${(v / 1_000).toFixed(0)}K`,
-            name,
-          ]}
+          formatter={(value, name) => {
+            const v = typeof value === "number" ? value : 0;
+            return [`KES ${(v / 1_000).toFixed(0)}K`, String(name)];
+          }}
           contentStyle={TOOLTIP_STYLE}
         />
         <Legend iconSize={8} wrapperStyle={{ fontSize: 11 }} />
@@ -352,7 +376,10 @@ function UserGrowthChart() {
           tickFormatter={(v: number) => `${(v / 1_000).toFixed(1)}K`}
         />
         <Tooltip
-          formatter={(v: number) => [v.toLocaleString(), "Users"]}
+          formatter={(value) => {
+            const v = typeof value === "number" ? value : 0;
+            return [v.toLocaleString(), "Users"];
+          }}
           contentStyle={TOOLTIP_STYLE}
         />
         <Line
@@ -390,7 +417,10 @@ function VolumeChart() {
           tickFormatter={(v: number) => `${(v / 1_000_000).toFixed(0)}M`}
         />
         <Tooltip
-          formatter={(v: number) => [`KSH ${(v / 1_000_000).toFixed(1)}M`, "Volume"]}
+          formatter={(value) => {
+            const v = typeof value === "number" ? value : 0;
+            return [`KES ${(v / 1_000_000).toFixed(1)}M`, "Volume"];
+          }}
           contentStyle={TOOLTIP_STYLE}
         />
         <Bar dataKey="volume" fill="#0EA5E9" radius={[4, 4, 0, 0]} />
@@ -419,7 +449,10 @@ function AccountTypesChart() {
             ))}
           </Pie>
           <Tooltip
-            formatter={(v: number) => [v.toLocaleString(), ""]}
+            formatter={(value) => {
+              const v = typeof value === "number" ? value : 0;
+              return [v.toLocaleString(), ""];
+            }}
             contentStyle={TOOLTIP_STYLE}
           />
         </PieChart>
@@ -475,9 +508,9 @@ function HealthRow({ metric }: { metric: HealthMetric }) {
    PAGE COMPONENT
 ───────────────────────────────────────────────────────────── */
 export default function DashboardPage() {
-  const [period,      setPeriod]      = useState<Period>("ytd");
-  const [refreshKey,  setRefreshKey]  = useState(0);
-  const [isRefreshing,setIsRefreshing]= useState(false);
+  const [period, setPeriod] = useState<Period>("ytd");
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   /* Simulate a data refresh */
   const handleRefresh = useCallback(() => {
@@ -493,20 +526,19 @@ export default function DashboardPage() {
     period === "7d"
       ? MOCK_REVENUE_DATA.slice(-2)
       : period === "1m"
-      ? MOCK_REVENUE_DATA.slice(-4)
-      : MOCK_REVENUE_DATA;
+        ? MOCK_REVENUE_DATA.slice(-4)
+        : MOCK_REVENUE_DATA;
 
   /* Date header */
   const today = new Date().toLocaleDateString("en-KE", {
     weekday: "long",
-    day:     "numeric",
-    month:   "long",
-    year:    "numeric",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
   });
 
   return (
     <div className="space-y-5 animate-fade-in" key={refreshKey}>
-
       {/* ── Page header ── */}
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -548,7 +580,6 @@ export default function DashboardPage() {
 
       {/* ── Revenue chart + Account types ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
         {/* Revenue Breakdown — 2/3 width */}
         <Card className="lg:col-span-2">
           <CardHeader className="pb-2">
@@ -585,7 +616,6 @@ export default function DashboardPage() {
 
       {/* ── User growth + Volume + System health ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
         {/* User Growth */}
         <Card>
           <CardHeader className="pb-2">

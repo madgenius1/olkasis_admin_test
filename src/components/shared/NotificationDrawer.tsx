@@ -6,46 +6,79 @@ import { MOCK_NOTIFICATIONS } from "../../lib/mockData";
 import type { Notification } from "../../types/index";
 import { cn, timeAgo } from "../../lib/utils";
 import {
-  AlertTriangle, ShieldCheck, Headphones, Zap, TrendingUp, X, Check,
+  AlertTriangle,
+  ShieldCheck,
+  Headphones,
+  Zap,
+  TrendingUp,
+  X,
+  Check,
 } from "lucide-react";
 
 const CATEGORY_META: Record<
   Notification["category"],
   { label: string; icon: React.ElementType; colour: string }
 > = {
-  aml:     { label: "AML",     icon: AlertTriangle, colour: "text-red-500 bg-red-50 dark:bg-red-950" },
-  kyc:     { label: "KYC",     icon: ShieldCheck,   colour: "text-amber-500 bg-amber-50 dark:bg-amber-950" },
-  ticket:  { label: "Support", icon: Headphones,    colour: "text-blue-500 bg-blue-50 dark:bg-blue-950" },
-  system:  { label: "System",  icon: Zap,           colour: "text-purple-500 bg-purple-50 dark:bg-purple-950" },
-  trading: { label: "Trading", icon: TrendingUp,    colour: "text-emerald-500 bg-emerald-50 dark:bg-emerald-950" },
+  aml: {
+    label: "AML",
+    icon: AlertTriangle,
+    colour: "text-red-500 bg-red-50 dark:bg-red-950",
+  },
+  kyc: {
+    label: "KYC",
+    icon: ShieldCheck,
+    colour: "text-amber-500 bg-amber-50 dark:bg-amber-950",
+  },
+  ticket: {
+    label: "Support",
+    icon: Headphones,
+    colour: "text-blue-500 bg-blue-50 dark:bg-blue-950",
+  },
+  system: {
+    label: "System",
+    icon: Zap,
+    colour: "text-purple-500 bg-purple-50 dark:bg-purple-950",
+  },
+  trading: {
+    label: "Trading",
+    icon: TrendingUp,
+    colour: "text-emerald-500 bg-emerald-50 dark:bg-emerald-950",
+  },
 };
 
 interface Props {
-  open:    boolean;
+  open: boolean;
   onClose: () => void;
 }
 
 export function NotificationDrawer({ open, onClose }: Props) {
-  const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS);
+  const [notifications, setNotifications] =
+    useState<Notification[]>(MOCK_NOTIFICATIONS);
   const [filter, setFilter] = useState<Notification["category"] | "all">("all");
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const visible = filter === "all"
-    ? notifications
-    : notifications.filter((n) => n.category === filter);
+  const visible =
+    filter === "all"
+      ? notifications
+      : notifications.filter((n) => n.category === filter);
 
   const markAllRead = () =>
     setNotifications((ns) => ns.map((n) => ({ ...n, read: true })));
 
   const markRead = (id: string) =>
     setNotifications((ns) =>
-      ns.map((n) => (n.id === id ? { ...n, read: true } : n))
+      ns.map((n) => (n.id === id ? { ...n, read: true } : n)),
     );
 
-  const categories = (
-    ["all", "aml", "kyc", "ticket", "trading", "system"] as const
-  );
+  const categories = [
+    "all",
+    "aml",
+    "kyc",
+    "ticket",
+    "trading",
+    "system",
+  ] as const;
 
   return (
     <>
@@ -63,7 +96,7 @@ export function NotificationDrawer({ open, onClose }: Props) {
           "fixed right-0 top-0 z-50 h-full w-[380px] bg-white dark:bg-slate-900 shadow-2xl",
           "flex flex-col border-l border-slate-200 dark:border-slate-700",
           "transition-transform duration-250 ease-out",
-          open ? "translate-x-0" : "translate-x-full"
+          open ? "translate-x-0" : "translate-x-full",
         )}
       >
         {/* Header */}
@@ -83,6 +116,7 @@ export function NotificationDrawer({ open, onClose }: Props) {
               <button
                 onClick={markAllRead}
                 className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+                aria-label="Mark all notifications as read"
               >
                 <Check className="w-3 h-3" />
                 Mark all read
@@ -92,7 +126,7 @@ export function NotificationDrawer({ open, onClose }: Props) {
               onClick={onClose}
               className="w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             >
-            <h6 className="invisible">h</h6>
+              <h6 className="invisible">h</h6>
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -108,13 +142,11 @@ export function NotificationDrawer({ open, onClose }: Props) {
                 "px-2.5 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-colors",
                 filter === cat
                   ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                  : "text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  : "text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800",
               )}
             >
               {cat === "all" ? "All" : CATEGORY_META[cat].label}
-              {cat === "all"
-                ? unreadCount > 0 && ` (${unreadCount})`
-                : ""}
+              {cat === "all" ? unreadCount > 0 && ` (${unreadCount})` : ""}
             </button>
           ))}
         </div>
@@ -136,22 +168,31 @@ export function NotificationDrawer({ open, onClose }: Props) {
                     key={n.id}
                     className={cn(
                       "flex gap-3 px-4 py-3.5 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/40",
-                      !n.read && "bg-blue-50/50 dark:bg-blue-950/20"
+                      !n.read && "bg-blue-50/50 dark:bg-blue-950/20",
                     )}
                     onClick={() => markRead(n.id)}
                   >
                     {/* Icon */}
-                    <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5", meta.colour)}>
+                    <div
+                      className={cn(
+                        "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5",
+                        meta.colour,
+                      )}
+                    >
                       <Icon className="w-4 h-4" />
                     </div>
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        <p className={cn(
-                          "text-sm leading-snug",
-                          n.read ? "text-slate-600 dark:text-slate-300" : "text-slate-900 dark:text-slate-50 font-medium"
-                        )}>
+                        <p
+                          className={cn(
+                            "text-sm leading-snug",
+                            n.read
+                              ? "text-slate-600 dark:text-slate-300"
+                              : "text-slate-900 dark:text-slate-50 font-medium",
+                          )}
+                        >
                           {n.title}
                         </p>
                         {!n.read && (
