@@ -8,8 +8,6 @@ import {
   TrendingUp, TrendingDown, Clock, Zap,
   ChevronDown, ChevronRight, Eye, Activity,
 } from "lucide-react";
-import MOCK_DERIVATIVES
-
 import {
   MOCK_DERIVATIVES, MOCK_DERIVATIVES_APPROVALS,
   MOCK_MARGIN_CALLS,

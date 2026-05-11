@@ -14,13 +14,13 @@ import { useDebounce } from "../../../../hooks/useDebounce";
 import { cn, formatKSh } from "../../../../lib/utils";
 import { Button } from "../../../../components/ui/button";
 import { Input } from "../../../../components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../../../components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../../../components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../../components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../../components/ui/tabs";
 import {
   Select, SelectContent, SelectItem,
   SelectTrigger, SelectValue,
-} from "../../../../../components/ui/select";
-import {../../../../lib/mockData
+} from "../../../../components/ui/select";
+import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
   DialogDescription, DialogBody, DialogFooter,
 } from "../../../../components/ui/dialog";
