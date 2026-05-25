@@ -312,5 +312,5 @@ export const config = {
      *  - .png / .jpg / .svg etc (public assets)
      */
     "/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico|woff2?|ttf)).*)",
-  ],
+  ], 
 };
